@@ -26,10 +26,31 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build in OpenBSD
         uses: vmactions/openbsd-vm@v1.1.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
           prepare: |
             pkg_add rust
           run: |
-            uname -a
-            ls -l /bsd
             cargo install bws --locked
+            gzip ~/.cargo/bin/bws
+            
+      - name: Create release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ steps.version.outputs.version }}
+          tag_name: ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ~/.cargo/bin/bws.gz
+          asset_name: bws-openbsd-amd64.gz
+          asset_content_type: application/gzip
