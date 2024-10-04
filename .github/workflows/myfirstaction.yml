@@ -37,8 +37,8 @@ jobs:
              pwd
             tree
             tree /root
-            gzip /root/.cargo/bin/bws
-            mv /root/.cargo/bin/bws.gz .
+            #gzip /root/.cargo/bin/bws
+            mv /root/.cargo/bin/bws .
             
       #- name: Create release
       #  uses: actions/create-release@v1
@@ -55,8 +55,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
+          name: bws-v1.0.0-openbsd-amd64
           #upload_url: ${{ steps.create_release.outputs.upload_url }}
-          path: bws.gz
+          path: bws
           overwrite: true
           #asset_name: bws-openbsd-amd64.gz
           #asset_content_type: application/gzip
