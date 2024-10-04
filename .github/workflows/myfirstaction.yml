@@ -31,9 +31,11 @@ jobs:
         with:
           prepare: |
             pkg_add rust
+            pkg_add tree
           run: |
             cargo install bws --locked
-            gzip ~/.cargo/bin/bws
+            tree
+            gzip /root/.cargo/bin/bws
             
       #- name: Create release
       #  uses: actions/create-release@v1
@@ -51,7 +53,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           #upload_url: ${{ steps.create_release.outputs.upload_url }}
-          path: ~/.cargo/bin/bws.gz
+          path: /root/.cargo/bin/bws.gz
           overwrite: true
           #asset_name: bws-openbsd-amd64.gz
           #asset_content_type: application/gzip
