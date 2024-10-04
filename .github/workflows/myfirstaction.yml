@@ -35,22 +35,23 @@ jobs:
             cargo install bws --locked
             gzip ~/.cargo/bin/bws
             
-      - name: Create release
-        uses: actions/create-release@v1
-        id: create_release
-        with:
-          draft: false
-          prerelease: false
-          release_name: 'v1.0.0'
-          tag_name: ${{ github.ref }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+      #- name: Create release
+      #  uses: actions/create-release@v1
+      #  id: create_release
+      #  with:
+      #    draft: false
+      #    prerelease: false
+      #    release_name: 'v1.0.0'
+      #    tag_name: ${{ github.ref }}
+      #  env:
+      #    GITHUB_TOKEN: ${{ github.token }}
       - name: Upload artifact
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-artifact@v4
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ~/.cargo/bin/bws.gz
-          asset_name: bws-openbsd-amd64.gz
-          asset_content_type: application/gzip
+          #upload_url: ${{ steps.create_release.outputs.upload_url }}
+          path: ~/.cargo/bin/bws.gz
+          overwrite: true
+          #asset_name: bws-openbsd-amd64.gz
+          #asset_content_type: application/gzip
