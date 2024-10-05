@@ -25,39 +25,42 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
       - name: Build bws in OpenBSD
+        id: build
         uses: vmactions/openbsd-vm@v1.1.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
+          cpu: 6
           prepare: |
             pkg_add rust
             pkg_add tree
           run: |
             cargo install bws --locked
-             pwd
+            pwd
             tree
             tree /root
-            #gzip /root/.cargo/bin/bws
             mv /root/.cargo/bin/bws .
-            
-      #- name: Create release
-      #  uses: actions/create-release@v1
-      #  id: create_release
-      #  with:
-      #    draft: false
-      #    prerelease: false
-      #    release_name: 'v1.0.0'
-      #    tag_name: ${{ github.ref }}
-      #  env:
-      #    GITHUB_TOKEN: ${{ github.token }}
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+            echo "::set-output name=version::$(./bws --version | sed 's/bws //')"
+
+      - name: Create release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ steps.build.outputs.version }}
+          tag_name: ${{ github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          name: bws-v1.0.0-openbsd-amd64
-          #upload_url: ${{ steps.create_release.outputs.upload_url }}
-          path: bws
-          overwrite: true
+          asset_name: bws-openbsd-amd64
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: bws
+          #overwrite: true
           #asset_name: bws-openbsd-amd64.gz
-          #asset_content_type: application/gzip
+          asset_content_type: application/zip
