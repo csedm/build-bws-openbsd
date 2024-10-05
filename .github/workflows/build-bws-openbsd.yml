@@ -36,11 +36,9 @@ jobs:
             pkg_add tree
           run: |
             cargo install bws --locked
-            pwd
-            tree
-            tree /root
             mv /root/.cargo/bin/bws .
             echo "{version}={$(./bws --version | sed 's/bws //')}" >> $GITHUB_OUTPUT
+            tar czf bws.tar.gz ./bws
 
       - name: Create release
         uses: actions/create-release@v1
@@ -48,8 +46,8 @@ jobs:
         with:
           draft: false
           prerelease: false
-          release_name: "v${{ steps.build.outputs.version }}"
-          tag_name: "v${{ steps.build.outputs.version }}"
+          release_name: Release ${{ steps.build.outputs.version }}
+          tag_name: ${{ steps.build.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -58,9 +56,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          asset_name: bws-openbsd-amd64
+          asset_name: bws-openbsd-amd64.tar.gz
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: bws
-          #overwrite: true
-          #asset_name: bws-openbsd-amd64.gz
-          asset_content_type: application/zip
+          asset_path: bws.tar.gz
+          asset_content_type: application/gzip
