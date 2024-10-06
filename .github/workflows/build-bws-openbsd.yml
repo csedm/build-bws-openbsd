@@ -33,11 +33,12 @@ jobs:
           cpu: 6
           prepare: |
             pkg_add rust
-            pkg_add tree
+            #pkg_add tree
           run: |
             cargo install bws --locked
             mv /root/.cargo/bin/bws .
-            echo "{version}={$(./bws --version | sed 's/bws //')}" >> $GITHUB_OUTPUT
+            #echo "{version}={$(./bws --version | sed 's/bws //')}" >> $GITHUB_OUTPUT
+            echo "::set-output name=version::$(./bws --version | sed 's/bws //')"
             tar czf bws.tar.gz ./bws
 
       - name: Create release
